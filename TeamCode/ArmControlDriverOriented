@@ -47,7 +47,7 @@ public class ArmControlDriverOriented extends LinearOpMode {
 
             //Run motors using powers
             motorFL.setPower(FLPower);
-            telemetry.addData("Arm Encoder", frontLeft.getCurrentPosition())
+            telemetry.addData("Arm Encoder", motorFL.getCurrentPosition());
         }
     }
 }
