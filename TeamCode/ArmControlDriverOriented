@@ -19,14 +19,6 @@ public class ArmControlDriverOriented extends LinearOpMode {
 
         // Right motors should move in reverse
         motorFL.setDirection(DcMotorSimple.Direction.FORWARD);
-        // Retrieve the IMU from the hardware map
-        BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        // Technically this is the default, however specifying it is clearer
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        // Without this, data retrieving from the IMU throws an exception
-        imu.initialize(parameters);
-
         waitForStart();
 
         if (isStopRequested()) return;
