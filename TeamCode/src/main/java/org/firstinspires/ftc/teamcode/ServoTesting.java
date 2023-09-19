@@ -30,6 +30,8 @@ public class ServoTesting extends LinearOpMode {
             }
 
             servo1.setPosition(location);
+            telemetry.addData("Current Location", location);
+            telemetry.update();
         }
     }
 }
