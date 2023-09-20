@@ -24,21 +24,25 @@ public class ArmControlDriverOriented extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            double y = -gamepad1.left_stick_x; // Y stick is reversed
-            double x = gamepad1.left_stick_x; // Counteract imperfect strafing
+            double ArmPower = 0;
+            double y = gamepad1.left_trigger; // Y stick is reversed
+            double x = gamepad1.right_trigger; // Counteract imperfect strafing
+                if(gamepad1.right_trigger >= 0.4){
+                    ArmPower = 0.1;
+                }
+                else if(gamepad1.left_trigger >= 0.4){
+                    ArmPower = -0.1;
+                }
+
+                motorFL.setPower(ArmPower);
+
+                telemetry.update();
+
+                    // Pace this loop so jaw action is reasonable speed.
+                sleep(50);
 
 
 
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio, but only when at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) , 1);
-            //Set motor powers
-            double FLPower = ( y + x ) / denominator;
-
-
-
-            //Run motors using powers
-            motorFL.setPower(FLPower);
             telemetry.addData("Arm Encoder", motorFL.getCurrentPosition());
         }
     }
