@@ -27,6 +27,9 @@ public class ArmTesting extends LinearOpMode {
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         jointMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        int jointPosition = 0;
+        int armPosition = 0;
+
         waitForStart();
 
         if (isStopRequested()) return;
@@ -35,8 +38,8 @@ public class ArmTesting extends LinearOpMode {
             // Deadband to address controller drift
             double deadband = 0.1;
 
-            raw_arm_power = gamepad1.left_stick_y;
-            raw_joint_power = gamepad1.right_stick_y;
+            double raw_arm_power = gamepad1.left_stick_y;
+            double raw_joint_power = gamepad1.right_stick_y;
 
             // Apply deadband
             if (Math.abs(raw_arm_power) < deadband) {
@@ -47,9 +50,23 @@ public class ArmTesting extends LinearOpMode {
             }
 
             // Exponential for fine control
-            exponent = 2.0;
-            arm_power = Math.signum(raw_arm_power) * Math.pow(Math.abs(raw_arm_power), exponent) * 0.5;
-            joint_power = Math.signum(raw_joint_power) * Math.pow(Math.abs(raw_joint_power), exponent) * 0.5;
+            double exponent = 2.0;
+            double arm_power = Math.signum(raw_arm_power) * Math.pow(Math.abs(raw_arm_power), exponent) * 0.5;
+            double joint_power = Math.signum(raw_joint_power) * Math.pow(Math.abs(raw_joint_power), exponent) * 0.5;
+
+            // CONNECT ENCODERS BEFORE ENABLING THIS
+            /*
+            if (arm_power == 0) {
+                armMotor.setTargetPosition(armPosition);
+            }
+
+            if (joint_power == 0) {
+                jointMotor.setTargetPosition(jointPosition);
+            }
+            */
+
+            armPosition = armMotor.getCurrentPosition();
+            jointPosition = jointMotor.getCurrentPosition();
 
             jointMotor.setPower(joint_power);
             armMotor.setPower(arm_power);
@@ -57,8 +74,8 @@ public class ArmTesting extends LinearOpMode {
             telemetry.addData("jointMotor", jointMotor.getPower());
             telemetry.addData("armMotor", armMotor.getPower());
 
-            telemetry.addData("jointMotor", jointMotor.getCurrentPosition());
-            telemetry.addData("armMotor", armMotor.getCurrentPosition());
+            telemetry.addData("jointMotor", jointPosition);
+            telemetry.addData("armMotor", armPosition);
 
             telemetry.update();
         }
