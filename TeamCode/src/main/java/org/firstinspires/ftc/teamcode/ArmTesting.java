@@ -12,46 +12,55 @@ public class ArmTesting extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Get servos
-        DcMotor bottomMotor = hardwareMap.dcMotor.get("frontLeft");
-        DcMotor topMotor = hardwareMap.dcMotor.get("backLeft");
+        DcMotor jointMotor = hardwareMap.dcMotor.get("frontLeft");
+        DcMotor armMotor = hardwareMap.dcMotor.get("backLeft");
 
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        jointMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        topMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        topMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        jointMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        jointMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        bottomMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        bottomMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        bottomMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        topMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        jointMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         waitForStart();
 
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            bottomMotor.setPower(gamepad1.left_stick_y);
-            topMotor.setPower(gamepad1.right_stick_y);
+            // Deadband to address controller drift
+            double deadband = 0.1;
 
-            telemetry.addData("bottomMotor", bottomMotor.getPower());
-            telemetry.addData("topMotor", topMotor.getPower());
+            raw_arm_power = gamepad1.left_stick_y;
+            raw_joint_power = gamepad1.right_stick_y;
 
-            telemetry.addData("bottomMotor", bottomMotor.getCurrentPosition());
-            telemetry.addData("topMotor", topMotor.getCurrentPosition());
+            // Apply deadband
+            if (Math.abs(raw_arm_power) < deadband) {
+                raw_arm_power = 0;
+            }
+            if (Math.abs(raw_joint_power) < deadband) {
+                raw_joint_power = 0;
+            }
 
+            // Exponential for fine control
+            exponent = 2.0;
+            arm_power = Math.signum(raw_arm_power) * Math.pow(Math.abs(raw_arm_power), exponent) * 0.5;
+            joint_power = Math.signum(raw_joint_power) * Math.pow(Math.abs(raw_joint_power), exponent) * 0.5;
+
+            jointMotor.setPower(joint_power);
+            armMotor.setPower(arm_power);
+
+            telemetry.addData("jointMotor", jointMotor.getPower());
+            telemetry.addData("armMotor", armMotor.getPower());
+
+            telemetry.addData("jointMotor", jointMotor.getCurrentPosition());
+            telemetry.addData("armMotor", armMotor.getCurrentPosition());
 
             telemetry.update();
         }
     }
 }
-
-// Every time y is pressed, the servo location increases by 0.1
-/// Every time a is pressed, the servo location decreases by 0.1
-
-// float location = 0
-// If y is clicked, then location = location + 0.1
-// If a is clicked, then location = location - 0.1
-// If x is clicked, then location = location + 0.06
-// If b is clicked, then location = location - 0.06
-// hi owen its me i
