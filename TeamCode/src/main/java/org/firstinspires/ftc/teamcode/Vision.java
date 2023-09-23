@@ -45,6 +45,8 @@ public class Vision extends LinearOpMode {
                 telemetry.addData("roll", tag.ftcPose.roll);
                 telemetry.addData("pitch", tag.ftcPose.pitch);
                 telemetry.addData("x", tag.ftcPose.yaw);
+                telemetry.addData("range", tag.ftcPose.range);
+
 
 
 //By using this you will be able to get the x y z Pitch x rotation Roll y rotation Yaw is z rotation

@@ -20,6 +20,8 @@ public class MecanumControlDriverOriented extends LinearOpMode {
         DcMotor motorBL = hardwareMap.dcMotor.get("backLeft");
         DcMotor motorFR = hardwareMap.dcMotor.get("frontRight");
         DcMotor motorBR = hardwareMap.dcMotor.get("backRight");
+        PIDController visionController = new PIDController(0.2,0,0,0.1);
+
 
 
         // Right motors should move in reverse
@@ -45,24 +47,31 @@ public class MecanumControlDriverOriented extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
+            sleep(100);
             double y = -gamepad1.left_stick_y; // Y stick is reversed
             double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
             double theta = gamepad1.right_stick_x; //Rotate by theta
+            if(gamepad1.left_stick_button){
 
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio, but only when at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(theta), 1);
-            //Set motor powers
-            double FLPower = (y + x + theta) / denominator;
-            double BLPower = (y - x + theta) / denominator;
-            double FRPower = (y - x - theta) / denominator;
-            double BRPower = (y + x - theta) / denominator;
+            }
+            else{
+                // Denominator is the largest motor power (absolute value) or 1
+                // This ensures all the powers maintain the same ratio, but only when at least one is out of the range [-1, 1]
+                double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(theta), 1);
+                //Set motor powers
+                double FLPower = (y + x + theta) / denominator;
+                double BLPower = (y - x + theta) / denominator;
+                double FRPower = (y - x - theta) / denominator;
+                double BRPower = (y + x - theta) / denominator;
 
-            //Run motors using powers
-            motorFL.setPower(FLPower);
-            motorBL.setPower(BLPower);
-            motorFR.setPower(FRPower);
-            motorBR.setPower(BRPower);
+                //Run motors using powers
+                motorFL.setPower(FLPower);
+                motorBL.setPower(BLPower);
+                motorFR.setPower(FRPower);
+                motorBR.setPower(BRPower);
+            }
+
+
         }
     }
 }
