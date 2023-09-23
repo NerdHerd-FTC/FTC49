@@ -15,6 +15,14 @@ public class ArmTesting extends LinearOpMode {
         DcMotor bottomMotor = hardwareMap.dcMotor.get("frontLeft");
         DcMotor topMotor = hardwareMap.dcMotor.get("backLeft");
 
+
+        topMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        topMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+        bottomMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bottomMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         bottomMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         topMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -28,6 +36,9 @@ public class ArmTesting extends LinearOpMode {
 
             telemetry.addData("bottomMotor", bottomMotor.getPower());
             telemetry.addData("topMotor", topMotor.getPower());
+
+            telemetry.addData("bottomMotor", bottomMotor.getCurrentPosition());
+            telemetry.addData("topMotor", topMotor.getCurrentPosition());
 
 
             telemetry.update();
