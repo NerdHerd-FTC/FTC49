@@ -15,8 +15,8 @@ public class MecanumFieldCentric extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        public bool exponential_drive = true;
-        public bool slowdown = false;
+        boolean exponential_drive = true;
+        boolean slowdown = false;
 
         // Declare motors (F=front, B=back, R=right, L=left)
         DcMotor motorFL = hardwareMap.dcMotor.get("frontLeft");
