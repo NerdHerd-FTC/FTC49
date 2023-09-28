@@ -14,18 +14,27 @@ public class JointEncoder extends LinearOpMode {
 
         jointMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        jointMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        jointMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        jointMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         jointMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        boolean done = false;
 
         waitForStart();
 
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
+            if (!done) {
+                jointMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                jointMotor.setTargetPosition(200);
+                done = true;
+            }
+            jointMotor.setPower(1);
+
             telemetry.addData("Encoder location", jointMotor.getCurrentPosition());
+            telemetry.addData("done", done);
+            telemetry.addData("target position", jointMotor.getTargetPosition());
             telemetry.update();
 
             sleep(50);

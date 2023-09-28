@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Arm Testing")
-@Disabled
 public class ArmTesting extends LinearOpMode {
     public Servo servo1 = null;
 
@@ -37,6 +36,9 @@ public class ArmTesting extends LinearOpMode {
 
         double armError = 0;
         int jointError = 0;
+
+        double armKp = 0.0001;
+        double jointKp = 0.001;
 
         int holding_arm_location = 0;
         int holding_joint_location = 0;
@@ -80,21 +82,31 @@ public class ArmTesting extends LinearOpMode {
                 arm_power = Math.signum(raw_arm_power) * Math.pow(Math.abs(raw_arm_power), exponent) * 0.25;
             }
             if (!hold_joint) {
-                joint_power = Math.signum(raw_joint_power) * Math.pow(Math.abs(raw_joint_power), exponent) * 0.1;
+                joint_power = Math.signum(raw_joint_power) * Math.pow(Math.abs(raw_joint_power), exponent) * 0.25;
+            }
+
+            if (gamepad1.y) {
+                jointKp += 0.001;
+            } else if (gamepad1.a) {
+                jointKp -= 0.001;
+            } else if (gamepad1.x) {
+                armKp -= 0.0001;
+            } else if (gamepad1.b) {
+                armKp += 0.0001;
             }
 
             // CONNECT ENCODERS BEFORE ENABLING THIS
             if (hold_arm) {
                 armMotor.setTargetPosition(holding_arm_location);
                 armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                arm_power = hold_position_power(armPosition, holding_arm_location, true);
+                arm_power = hold_position_power(armPosition, holding_arm_location, true, armKp);
             }
 
             if (hold_joint) {
                 jointMotor.setTargetPosition(holding_joint_location);
                 jointMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 jointError = jointMotor.getTargetPosition() - jointMotor.getCurrentPosition();
-                joint_power = hold_position_power(jointPosition, holding_joint_location, false);
+                joint_power = hold_position_power(jointPosition, holding_joint_location, false, jointKp);
             }
 
             /*
@@ -127,13 +139,11 @@ public class ArmTesting extends LinearOpMode {
         }
     }
 
-    private double hold_position_power(double current_position, double target_position, boolean isArm){
+    private double hold_position_power(double current_position, double target_position, boolean isArm, double armP){
         if (!isArm) {
-            double armP = 0.0001;
             double armError = target_position - current_position;
             return armError*armP;
         } else {
-            double armP = 0.001;
             double armError = target_position - current_position;
             return armError*armP;
         }
