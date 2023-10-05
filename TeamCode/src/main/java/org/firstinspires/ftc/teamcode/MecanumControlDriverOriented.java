@@ -1,115 +1,77 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
-//https://github.com/NerdHerd-FTC/CAMS-FTC/blob/develop_Jadon/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/MecanumControlDriverOriented.java
-@TeleOp(name = "Mecanum Control Driver Oriented - SIM")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Mecanum Control Driver Oriented - SIM")
 public class MecanumControlDriverOriented extends LinearOpMode {
+
+    private DcMotor motorFL, motorBL, motorFR, motorBR, motorJoint;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        // Initialize motors
+        motorFL = hardwareMap.dcMotor.get("frontLeft");
+        motorBL = hardwareMap.dcMotor.get("backLeft");
+        motorFR = hardwareMap.dcMotor.get("frontRight");
+        motorBR = hardwareMap.dcMotor.get("backRight");
+        motorJoint = hardwareMap.dcMotor.get("motorJoint");
 
-        // Declare motors (F=front, B=back, R=right, L=left)
-        DcMotor motorFL = hardwareMap.dcMotor.get("frontLeft");
-        DcMotor motorBL = hardwareMap.dcMotor.get("backLeft");
-        DcMotor motorFR = hardwareMap.dcMotor.get("frontRight");
-        DcMotor motorBR = hardwareMap.dcMotor.get("backRight");
-
-
-
-
-        // Right motors should move in reverse
+        // Set motor directions
         motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
-        // Left motors should move forward
         motorFR.setDirection(DcMotorSimple.Direction.FORWARD);
         motorBR.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        // Retrieve the IMU from the hardware map
-        IMU imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters imuParams;
-
-        imuParams = new IMU.Parameters(
-                new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
-
-        imu.initialize(imuParams);
-
-        waitForStart();
-
-        if (isStopRequested()) return;
-
-        while (opModeIsActive()) {
-            sleep(100);
-            double y = -gamepad1.left_stick_y; // Y stick is reversed
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double theta = gamepad1.right_stick_x; //Rotate by theta
-            if(gamepad1.left_stick_button){
-
-            }
-            else{
-                // Denominator is the largest motor power (absolute value) or 1
-                // This ensures all the powers maintain the same ratio, but only when at least one is out of the range [-1, 1]
-                double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(theta), 1);
-                //Set motor powers
-                double FLPower = (y + x + theta) / denominator;
-                double BLPower = (y - x + theta) / denominator;
-                double FRPower = (y - x - theta) / denominator;
-                double BRPower = (y + x - theta) / denominator;
-
-                //Run motors using powers
-                motorFL.setPower(FLPower);
-                motorBL.setPower(BLPower);
-                motorFR.setPower(FRPower);
-                motorBR.setPower(BRPower);
-            }
-
-
-        }
-        DcMotor motorJoint = hardwareMap.dcMotor.get("motorJoint");
-
-
-
-        // Right motors should move in reverse
         motorJoint.setDirection(DcMotorSimple.Direction.FORWARD);
+
         waitForStart();
 
-        if (isStopRequested()) return;
-
         while (opModeIsActive()) {
-            double ArmPower = 0;
-            double y = gamepad2.left_trigger; // Y stick is reversed
-            double x = gamepad2.right_trigger; // Counteract imperfect strafing
-            if(gamepad2.right_trigger >= 0.4){
-                ArmPower = 0.1;
-            }
-            else if(gamepad2.left_trigger >= 0.4){
-                ArmPower = -0.1;
-            }
+            // Drive control
+            double y = -gamepad1.left_stick_y;
+            double x = gamepad1.left_stick_x * 1.1;
+            double theta = gamepad1.right_stick_x;
 
-            motorJoint.setPower(ArmPower);
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(theta), 1);
+            double FLPower = (y + x + theta) / denominator;
+            double BLPower = (y - x + theta) / denominator;
+            double FRPower = (y - x - theta) / denominator;
+            double BRPower = (y + x - theta) / denominator;
 
-            telemetry.update();
+            motorFL.setPower(FLPower);
+            motorBL.setPower(BLPower);
+            motorFR.setPower(FRPower);
+            motorBR.setPower(BRPower);
 
-            // Pace this loop so jaw action is reasonable speed.
-            sleep(50);
+            // Arm control
+            double armPower = getArmPower(gamepad2);
 
-
+            motorJoint.setPower(armPower);
 
             telemetry.addData("Arm Encoder", motorJoint.getCurrentPosition());
+            telemetry.update();
+
+            sleep(50);
         }
     }
 
+    private double getArmPower(Gamepad gamepad) {
+        double power = 0;
+        double leftTrigger = gamepad.left_trigger;
+        double rightTrigger = gamepad.right_trigger;
 
+        if (rightTrigger >= 0.4) {
+            power = 0.1;
+        } else if (leftTrigger >= 0.4) {
+            power = -0.1;
+        }
+
+        return power;
+    }
 }
+
 
 
 
