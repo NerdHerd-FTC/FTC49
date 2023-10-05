@@ -79,7 +79,7 @@ public class MecanumControlDriverOriented extends LinearOpMode {
 
 
         // Right motors should move in reverse
-        motorFL.setDirection(DcMotorSimple.Direction.FORWARD);
+        motorJoint.setDirection(DcMotorSimple.Direction.FORWARD);
         waitForStart();
 
         if (isStopRequested()) return;
@@ -95,7 +95,7 @@ public class MecanumControlDriverOriented extends LinearOpMode {
                 ArmPower = -0.1;
             }
 
-            motorFL.setPower(ArmPower);
+            motorJoint.setPower(ArmPower);
 
             telemetry.update();
 
@@ -104,7 +104,7 @@ public class MecanumControlDriverOriented extends LinearOpMode {
 
 
 
-            telemetry.addData("Arm Encoder", motorFL.getCurrentPosition());
+            telemetry.addData("Arm Encoder", motorJoint.getCurrentPosition());
         }
     }
 
