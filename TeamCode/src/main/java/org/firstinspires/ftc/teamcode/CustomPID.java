@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 @TeleOp(name = "Custom PID")
+@Disabled
 public class CustomPID extends LinearOpMode {
 
     @Override
@@ -43,6 +44,8 @@ public class CustomPID extends LinearOpMode {
             if (error > 10) {
                 //Base PID
                 double P1 = Kp * error;
+                double D1 = Kd;
+
                 double powerPDF1 = (P1);
                 prevPos = jointMotor.getCurrentPosition();
 
