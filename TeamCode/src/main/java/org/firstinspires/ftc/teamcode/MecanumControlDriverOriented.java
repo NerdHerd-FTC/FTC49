@@ -15,12 +15,13 @@ public class MecanumControlDriverOriented extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         // Declare motors (F=front, B=back, R=right, L=left)
         DcMotor motorFL = hardwareMap.dcMotor.get("frontLeft");
         DcMotor motorBL = hardwareMap.dcMotor.get("backLeft");
         DcMotor motorFR = hardwareMap.dcMotor.get("frontRight");
         DcMotor motorBR = hardwareMap.dcMotor.get("backRight");
-        PIDController visionController = new PIDController(0.2,0,0,0.1);
+
 
 
 
@@ -73,6 +74,42 @@ public class MecanumControlDriverOriented extends LinearOpMode {
 
 
         }
+        DcMotor motorJoint = hardwareMap.dcMotor.get("motorJoint");
+
+
+
+        // Right motors should move in reverse
+        motorFL.setDirection(DcMotorSimple.Direction.FORWARD);
+        waitForStart();
+
+        if (isStopRequested()) return;
+
+        while (opModeIsActive()) {
+            double ArmPower = 0;
+            double y = gamepad2.left_trigger; // Y stick is reversed
+            double x = gamepad2.right_trigger; // Counteract imperfect strafing
+            if(gamepad2.right_trigger >= 0.4){
+                ArmPower = 0.1;
+            }
+            else if(gamepad2.left_trigger >= 0.4){
+                ArmPower = -0.1;
+            }
+
+            motorFL.setPower(ArmPower);
+
+            telemetry.update();
+
+            // Pace this loop so jaw action is reasonable speed.
+            sleep(50);
+
+
+
+            telemetry.addData("Arm Encoder", motorFL.getCurrentPosition());
+        }
     }
+
+
 }
+
+
 
