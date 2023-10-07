@@ -53,6 +53,7 @@ public class MecanumControlDriverOriented extends LinearOpMode {
             telemetry.addData("Arm Encoder", motorJoint.getCurrentPosition());
             telemetry.update();
 
+           
             sleep(50);
         }
     }
@@ -71,7 +72,3 @@ public class MecanumControlDriverOriented extends LinearOpMode {
         return power;
     }
 }
-
-
-
-
