@@ -37,7 +37,7 @@ public class JointTesting extends LinearOpMode {
         CRServo ArmServoRight = hardwareMap.get(CRServo.class, "Servo3");
         CRServo ArmServoLeft = hardwareMap.get(CRServo.class, "Servo4");
         Servo DroneServo = hardwareMap.get(Servo.class, "Servo 5");
-        Servo WristServo = hardwareMap.get(Servo.class, "Servo 6")
+        Servo WristServo = hardwareMap.get(Servo.class, "Servo 6");
 
         waitForStart();
 
@@ -138,6 +138,7 @@ public class JointTesting extends LinearOpMode {
         if(gamepad.dpad_down){
             power = -0.1;
         }
+        return power;
     }
 
     private double setArmPower(DcMotor jointMotor, Gamepad gamepad) {
