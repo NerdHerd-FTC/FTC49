@@ -75,7 +75,7 @@ public class JointTesting extends LinearOpMode {
     private double setRollerPowerRight(CRServo FrontRollerServoRight, Gamepad gamepad) {
         double power = 0;
 
-        if(gamepad.left_trigger != 0 )  {
+        if(gamepad.right_trigger != 0 )  {
            power = 0.75;
         }
 
@@ -86,7 +86,7 @@ public class JointTesting extends LinearOpMode {
         double power = 0;
 
         if(gamepad.left_trigger != 0 )  {
-            power = 0.75;
+            power = -0.75;
         }
 
         return power;
@@ -95,10 +95,10 @@ public class JointTesting extends LinearOpMode {
     private double setArmServoPowerRight(CRServo ArmServoPowerRight, Gamepad gamepad) {
         double power = 0;
 
-        if(gamepad.left_trigger != 0 )  {
+        if(!gamepad.left_bumper)  {
             power = 0.75;
         }
-        else if(gamepad.left_trigger != 1){
+        else if(gamepad.left_bumper){
             power = -0.75;
         }
 
@@ -108,10 +108,10 @@ public class JointTesting extends LinearOpMode {
     private double setArmServoPowerLeft(CRServo ArmServoPowerLeft, Gamepad gamepad) {
         double power = 0;
 
-        if(gamepad.right_trigger != 0 )  {
+        if(!gamepad.right_bumper)  {
             power = 0.75;
         }
-        else if(gamepad.right_trigger != 1){
+        else if(gamepad.left_bumper{
             power = -0.75;
         }
 
