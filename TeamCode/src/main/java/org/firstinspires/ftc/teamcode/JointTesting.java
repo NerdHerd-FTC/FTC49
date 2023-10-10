@@ -111,7 +111,7 @@ public class JointTesting extends LinearOpMode {
         if(!gamepad.right_bumper)  {
             power = 0.75;
         }
-        else if(gamepad.left_bumper{
+        else if(gamepad.left_bumper){
             power = -0.75;
         }
 
@@ -121,7 +121,7 @@ public class JointTesting extends LinearOpMode {
     private double setDroneServoPower(Servo DroneServoPower, Gamepad gamepad) {
         double power = 0;
 
-        if(gamepad.touchpad_finger_1_x != 0 )  {
+        if(gamepad.y)  {
             power = 1;
         }
 
