@@ -7,14 +7,15 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Arm Testing")
+@Disabled
 public class ArmTesting extends LinearOpMode {
     public Servo servo1 = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
         // Get servos
-        DcMotor jointMotor = hardwareMap.dcMotor.get("frontLeft");
-        DcMotor armMotor = hardwareMap.dcMotor.get("backLeft");
+        DcMotor jointMotor = hardwareMap.dcMotor.get("joint");
+        DcMotor armMotor = hardwareMap.dcMotor.get("arm");
 
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         jointMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
