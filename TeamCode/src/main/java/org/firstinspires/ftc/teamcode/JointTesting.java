@@ -60,11 +60,15 @@ public class JointTesting extends LinearOpMode {
         double mult = 1;
         double input = -gamepad.left_stick_y;
 
+        power = input*mult;
+
+        /*
         if (jointMotor.getCurrentPosition() <= 0 && input < 0) {
             power = 0;
         } else {
             power = input*mult;
         }
+         */
 
         return power;
     }
@@ -139,12 +143,16 @@ public class JointTesting extends LinearOpMode {
         double power;
         double mult = 0.5;
         double input = -gamepad.right_stick_y;
+        power = input*mult;
 
+        /*
         if (jointMotor.getCurrentPosition() <= 0 && input < 0) {
             power = 0;
         } else {
             power = input*mult;
         }
+
+         */
 
         return power;
     }
