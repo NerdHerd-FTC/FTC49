@@ -12,7 +12,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class AllLift extends LinearOpMode {
     ElapsedTime CSR = new ElapsedTime();
     ElapsedTime CSL = new ElapsedTime();
-    ElapsedTime CW = new ElapsedTime();
     ElapsedTime matchTime = new ElapsedTime();
 
     @Override
@@ -51,6 +50,8 @@ public class AllLift extends LinearOpMode {
         if (isStopRequested()) return;
 
         matchTime.reset();
+        CSR.reset();
+        CSL.reset();
 
         while (opModeIsActive()) {
             jointMotor.setPower(setJointPower(jointMotor, gamepad1));
@@ -61,14 +62,20 @@ public class AllLift extends LinearOpMode {
 
             setClawServoLeft(ClawServoLeft, gamepad2, 0.5, 0.0);
             setClawServoRight(ClawServoRight, gamepad2, 0.5, 0.0);
+            setWristServoPower(WristServo, gamepad2);
+
+            setDroneServoPosition(DroneServo, gamepad2, 0.5);
 
             checkGamepadParameters(gamepad1, "Driver");
+            checkGamepadParameters(gamepad2, "Operator");
             telemetry.addLine("\n");
             //checkGamepadParameters(gamepad2, "Operator");
 
             motorTelemetry(jointMotor, "Joint");
             telemetry.addLine("\n");
             motorTelemetry(armMotor, "Arm");
+            telemetry.addLine("\n");
+            telemetry.addData("Match Time", matchTime.seconds());
 
             telemetry.update();
             sleep(50);
@@ -120,10 +127,10 @@ public class AllLift extends LinearOpMode {
 
         ClawServoLeft.setPosition(position);
     }
-    private void setDroneServoPower(Servo DroneServo, Gamepad gamepad, double launch_position) {
+    private void setDroneServoPosition(Servo DroneServo, Gamepad gamepad, double launch_position) {
         double position = DroneServo.getPosition();
 
-        if(gamepad.a && matchTime.seconds() > 150)  {
+        if(gamepad.a && matchTime.seconds() > 120)  {
             position = launch_position;
         }
 
@@ -133,10 +140,10 @@ public class AllLift extends LinearOpMode {
         double position = WristServo.getPosition();
 
         if(gamepad.dpad_up){
-            position += 0.1;
+            position += 0.05;
         }
         else if(gamepad.dpad_down){
-            position -= 0.1;
+            position -= 0.05;
         }
 
         WristServo.setPosition(position);
@@ -160,7 +167,7 @@ public class AllLift extends LinearOpMode {
 
         return power;
     }
-    private double setArmPower(DcMotor jointMotor, Gamepad gamepad) {
+    private double setArmPower(DcMotor armMotor, Gamepad gamepad) {
         double power;
         double mult = 0.5;
         double input = -gamepad.right_stick_y;
