@@ -14,6 +14,12 @@ public class AllLift extends LinearOpMode {
     ElapsedTime CSL = new ElapsedTime();
     ElapsedTime matchTime = new ElapsedTime();
 
+    // Servo info
+    boolean fr_closed = false;
+    boolean fl_closed = false;
+    boolean csr_on = false;
+    boolean csl_on = false;
+
     @Override
     public void runOpMode() throws InterruptedException {
         // Get motors
@@ -39,11 +45,11 @@ public class AllLift extends LinearOpMode {
 
         // Reverse if opposite directions are seen
         FrontRollerServoRight.setDirection(CRServo.Direction.FORWARD);
-        FrontRollerServoLeft.setDirection(CRServo.Direction.REVERSE);
+        FrontRollerServoLeft.setDirection(CRServo.Direction.FORWARD);
 
         // Reverse if opposite directions are seen
-        ClawServoRight.setDirection(Servo.Direction.FORWARD);
-        ClawServoLeft.setDirection(Servo.Direction.REVERSE);
+        ClawServoRight.setDirection(Servo.Direction.REVERSE);
+        ClawServoLeft.setDirection(Servo.Direction.FORWARD);
 
         waitForStart();
 
@@ -60,8 +66,8 @@ public class AllLift extends LinearOpMode {
             setRollerPowerRight(FrontRollerServoRight, gamepad2);
             setRollerPowerLeft(FrontRollerServoLeft, gamepad2);
 
-            setClawServoLeft(ClawServoLeft, gamepad2, 0.5, 0.0);
-            setClawServoRight(ClawServoRight, gamepad2, 0.5, 0.0);
+            setClawServoLeft(ClawServoLeft, gamepad2, -0.1, 0);
+            setClawServoRight(ClawServoRight, gamepad2, -0.1, 0);
             setWristServoPower(WristServo, gamepad2);
 
             setDroneServoPosition(DroneServo, gamepad2, 0.5);
@@ -69,14 +75,14 @@ public class AllLift extends LinearOpMode {
             checkGamepadParameters(gamepad1, "Driver");
             checkGamepadParameters(gamepad2, "Operator");
             telemetry.addLine("\n");
-            //checkGamepadParameters(gamepad2, "Operator");
+            checkGamepadParameters(gamepad2, "Operator");
 
             motorTelemetry(jointMotor, "Joint");
             telemetry.addLine("\n");
             motorTelemetry(armMotor, "Arm");
             telemetry.addLine("\n");
             telemetry.addData("Match Time", matchTime.seconds());
-
+            ServoTelemetry(WristServo, ClawServoRight, ClawServoLeft);
             telemetry.update();
             sleep(50);
         }
@@ -88,6 +94,9 @@ public class AllLift extends LinearOpMode {
 
         if(gamepad.right_trigger != 0 )  {
             power = 0.75;
+            csr_on = true;
+        } else {
+            csr_on = false;
         }
 
         FrontRollerServoRight.setPower(power);
@@ -97,6 +106,9 @@ public class AllLift extends LinearOpMode {
 
         if(gamepad.left_trigger != 0 )  {
             power = -0.75;
+            csl_on = true;
+        } else {
+            csl_on = false;
         }
 
         FrontRollerServoLeft.setPower(power);
@@ -105,10 +117,14 @@ public class AllLift extends LinearOpMode {
         double position = ClawServoRight.getPosition();
 
         if(gamepad.right_bumper && CSR.seconds() > 0.5)  {
-            if (position <= closed_position)
+            if (position >= closed_position){
                 position = open_position;
-            else if (position >= open_position)
+                fr_closed = false;
+            }
+            else if (position <= open_position) {
                 position = closed_position;
+                fr_closed = true;
+            }
             CSR.reset();
         }
 
@@ -118,10 +134,14 @@ public class AllLift extends LinearOpMode {
         double position = ClawServoLeft.getPosition();
 
         if(gamepad.left_bumper && CSL.seconds() > 0.5)  {
-            if (position <= closed_position)
+            if (position <= closed_position) {
                 position = open_position;
-            else if (position >= open_position)
+                fl_closed = false;
+            }
+            else if (position >= open_position) {
                 position = closed_position;
+                fl_closed = true;
+            }
             CSL.reset();
         }
 
@@ -140,10 +160,10 @@ public class AllLift extends LinearOpMode {
         double position = WristServo.getPosition();
 
         if(gamepad.dpad_up){
-            position += 0.05;
+            position += 0.01;
         }
         else if(gamepad.dpad_down){
-            position -= 0.05;
+            position -= 0.01;
         }
 
         WristServo.setPosition(position);
@@ -226,6 +246,19 @@ public class AllLift extends LinearOpMode {
         telemetry.addData(name + " Power", motor.getPower());
         telemetry.addData(name + " Position", motor.getCurrentPosition());
         telemetry.addData(name + " Target Position", motor.getTargetPosition());
+    }
+
+    private void ServoTelemetry(Servo wrist, Servo FrontRight, Servo FrontLeft) {
+        telemetry.addLine("--- Servo ---");
+        telemetry.addData("FrontRollerRight Closed", fr_closed);
+        telemetry.addData("Front Right Location", FrontRight.getPosition());
+        telemetry.addData("FrontRollerLeft Closed", fl_closed);
+        telemetry.addData("Front Left Location", FrontLeft.getPosition());
+        telemetry.addData("CSR On", csr_on);
+        telemetry.addData("CSR Timer", CSR.seconds());
+        telemetry.addData("CSL On", csl_on);
+        telemetry.addData("CSL Timer", CSL.seconds());
+        telemetry.addData("Wrist", wrist.getPosition());
     }
     //-621, 0
     // -600
