@@ -63,8 +63,24 @@ public class ServoTesting extends LinearOpMode {
 
             currentServo.setPosition(location);
 
+            if (currentServo == ClawServoRight) {
+                CSR_pos = location;
+            } else if (currentServo == ClawServoLeft) {
+                CSL_pos = location;
+            } else if (currentServo == DroneServo) {
+                DS_pos = location;
+            } else if (currentServo == WristServo) {
+                WS_pos = location;
+            }
+
             telemetry.addData("Current Servo", currentServo);
             telemetry.addData("Current Location", location);
+            telemetry.addLine("\n\n");
+
+            telemetry.addData("CSR Last Position", CSR_pos);
+            telemetry.addData("CSL Last Position", CSL_pos);
+            telemetry.addData("DS Last Position", DS_pos);
+            telemetry.addData("WS Last Position", WS_pos);
 
             telemetry.update();
         }
