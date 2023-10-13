@@ -1,47 +1,72 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @TeleOp(name = "Single Servo Testing")
 public class ServoTesting extends LinearOpMode {
-    public Servo servo1 = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
         // Get servos
-        servo1 = hardwareMap.get(Servo.class, "Servo1");
+        Servo ClawServoRight = hardwareMap.get(Servo.class, "CSR");
+        Servo ClawServoLeft = hardwareMap.get(Servo.class, "CSL");
+        Servo DroneServo = hardwareMap.get(Servo.class, "DS");
+        Servo WristServo = hardwareMap.get(Servo.class, "WS");
+
+        // Reverse if opposite directions are seen
+        ClawServoRight.setDirection(Servo.Direction.REVERSE);
+        ClawServoLeft.setDirection(Servo.Direction.FORWARD);
+
+        // List of servos to test
+        List<Servo> servos = new ArrayList<Servo>();
+        servos.add(ClawServoRight);
+        servos.add(ClawServoLeft);
+        servos.add(DroneServo);
+        servos.add(WristServo);
 
         waitForStart();
 
         if (isStopRequested()) return;
 
         double location = 0;
+        int position = 0;
+
+        double CSR_pos = 0;
+        double CSL_pos = 0;
+        double DS_pos = 0;
+        double WS_pos = 0;
+
+        Servo currentServo;
 
         while (opModeIsActive()) {
+            currentServo = servos.get(position);
             if (gamepad1.y) {
                 location = location + 0.1;
             } else if (gamepad1.a) {
                 location = location - 0.1;
             } else if (gamepad1.x) {
-                location = location + 0.06;
+                location = location + 0.01;
             } else if (gamepad1.b) {
-                location = location - 0.06;
+                location = location - 0.01;
             }
 
-            servo1.setPosition(location);
+            if (gamepad1.dpad_up) {
+                position = position + 1;
+            } else if (gamepad1.dpad_down) {
+                position = position - 1;
+            }
+
+            currentServo.setPosition(location);
+
+            telemetry.addData("Current Servo", currentServo);
             telemetry.addData("Current Location", location);
+
             telemetry.update();
         }
     }
 }
-
-// Every time y is pressed, the servo location increases by 0.1
-/// Every time a is pressed, the servo location decreases by 0.1
-
-// float location = 0
-// If y is clicked, then location = location + 0.1
-// If a is clicked, then location = location - 0.1
-// If x is clicked, then location = location + 0.06
-// If b is clicked, then location = location - 0.06
-// hi owen its me i
