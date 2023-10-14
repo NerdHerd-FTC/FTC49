@@ -15,7 +15,7 @@ public class IMUTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Retrieve the IMU from the hardware map
-        IMU imu = hardwareMap.get(IMU.class, "imu");
+        IMU imu = hard  wareMap.get(IMU.class, "imu");
         IMU.Parameters imuParams;
 
         imuParams = new IMU.Parameters(
@@ -33,7 +33,11 @@ public class IMUTest extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
+            telemetry.addLine("IMU Data");
             telemetry.addData("IMU Yaw", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+
+            telemetry.update();
+            sleep(100);
         }
     }
 }

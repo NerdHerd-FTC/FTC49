@@ -40,7 +40,7 @@ public class AllLift extends LinearOpMode {
         CRServo FrontRollerServoLeft= hardwareMap.get(CRServo.class, "FRSL");
         Servo ClawServoRight = hardwareMap.get(Servo.class, "CSR");
         Servo ClawServoLeft = hardwareMap.get(Servo.class, "CSL");
-        Servo DroneServo = hardwareMap.get(Servo.class, "DS");
+        CRServo DroneServo = hardwareMap.get(CRServo.class, "DS");
         Servo WristServo = hardwareMap.get(Servo.class, "WS");
 
         // Reverse if opposite directions are seen
@@ -52,6 +52,14 @@ public class AllLift extends LinearOpMode {
         ClawServoLeft.setDirection(Servo.Direction.FORWARD);
 
         waitForStart();
+
+        // Reverse if opposite directions are seen
+        FrontRollerServoRight.setDirection(CRServo.Direction.FORWARD);
+        FrontRollerServoLeft.setDirection(CRServo.Direction.FORWARD);
+
+        // Reverse if opposite directions are seen
+        ClawServoRight.setDirection(Servo.Direction.REVERSE);
+        ClawServoLeft.setDirection(Servo.Direction.FORWARD);
 
         if (isStopRequested()) return;
 
@@ -70,7 +78,7 @@ public class AllLift extends LinearOpMode {
             setClawServoRight(ClawServoRight, gamepad2, -0.1, 0);
             setWristServoPower(WristServo, gamepad2);
 
-            setDroneServoPosition(DroneServo, gamepad2, 0.5);
+            activateDroneLauncher(DroneServo, gamepad2, 1);
 
             checkGamepadParameters(gamepad1, "Driver");
             checkGamepadParameters(gamepad2, "Operator");
@@ -147,14 +155,13 @@ public class AllLift extends LinearOpMode {
 
         ClawServoLeft.setPosition(position);
     }
-    private void setDroneServoPosition(Servo DroneServo, Gamepad gamepad, double launch_position) {
-        double position = DroneServo.getPosition();
-
+    private void activateDroneLauncher(CRServo DroneServo, Gamepad gamepad, double launch_speed) {
+        double power = 0;
         if(gamepad.a && matchTime.seconds() > 120)  {
-            position = launch_position;
+            power = launch_speed;
         }
 
-        DroneServo.setPosition(position);
+        DroneServo.setPower(power);
     }
     private void setWristServoPower(Servo WristServo, Gamepad gamepad){
         double position = WristServo.getPosition();
